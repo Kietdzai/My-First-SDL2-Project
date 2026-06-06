@@ -1,3 +1,4 @@
+# SDL2 Project
 Trò chơi giải đố, chủ đề "Làng nghề truyền thống ở địa phương em", Làng Bánh khô mè Bà Liễu Mẹ
 
 Phân chia công việc:
