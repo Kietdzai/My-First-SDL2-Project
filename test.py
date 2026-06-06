@@ -1,0 +1,1 @@
+for i in range(0, 10): print("Frame:", i, 640 - (19 + 25 + (39 + 25) * i))
