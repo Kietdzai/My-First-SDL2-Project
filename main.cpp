@@ -801,14 +801,17 @@ int main(int argc, const char** argv){
                 CauC.UI.ButtonState = 0;
                 CauD.UI.ButtonState = 0;
 
-                if (AnswerTrue)
-                {
+                if (AnswerTrue) {
                     TrueAns++;
+                    TrueCounter.so++;
                     Mix_PlayChannel(-1, CorrectSoundEffect, 0);
                     std::cout << "Đang phát 'correct.wav'." << std::endl;
 
-                    while (TrueAns == 5 && av_read_frame(formatCtx, &packet) >= 0){
+                    if (TrueAns == 5) {
+                        ChangeCursor(normal);
+                        round++; TrueAns = 0;
                         SDL_Window* Video_Window;
+                        SDL_Renderer* Video_Renderer;
                         const char* name_of_window_ = "Mời bạn xem đoạn video này";
                         if (StartWindow(Video_Window, name_of_window_, VideoW / 2, VideoH / 2) == 1){
                             SDL_DestroyTexture(All_Menu_Button);
@@ -829,30 +832,51 @@ int main(int argc, const char** argv){
                             SoundCleanup();
                             SDL_Quit();
                         }
-                        if (packet.stream_index == videoStream) {
-                            avcodec_send_packet(codecCtx, &packet);
-                            while (avcodec_receive_frame(codecCtx, frame) == 0) {
+                        if (Renderer(Video_Window, Video_Renderer) == 1){
+                            SDL_DestroyWindow(Video_Window);
+                            SDL_DestroyTexture(All_Menu_Button);
+                            SDL_DestroyTexture(Submit_Button_Texture);
+                            SDL_DestroyTexture(MenuBackground);
+                            SDL_DestroyTexture(GameBackground);
+                            SDL_DestroyTexture(CauA.UITexture);
+                            SDL_DestroyTexture(CauB.UITexture);
+                            SDL_DestroyTexture(CauC.UITexture);
+                            SDL_DestroyTexture(CauD.UITexture);
+                            SDL_DestroyTexture(health.texture);
+                            Mix_FreeChunk(CorrectSoundEffect);
+                            Mix_FreeChunk(IncorrectSoundEffect);
+                            SDL_DestroyRenderer(renderer);
+                            SDL_DestroyWindow(win);
+                            QuitFont();
+                            QuitImage();
+                            SoundCleanup();
+                            SDL_Quit();
+                        }
+                        while (av_read_frame(formatCtx, &packet) >= 0){
+                            if (packet.stream_index == videoStream) {
+                                avcodec_send_packet(codecCtx, &packet);
+                                while (avcodec_receive_frame(codecCtx, frame) == 0) {
 
-                                sws_scale(swsCtx, frame->data, frame->linesize, 0, VideoH, yuvFrame->data, yuvFrame->linesize);
+                                    sws_scale(swsCtx, frame->data, frame->linesize, 0, VideoH, yuvFrame->data, yuvFrame->linesize);
 
-                                SDL_UpdateYUVTexture(VideoTexture, nullptr, yuvFrame->data[0], yuvFrame->linesize[0], yuvFrame->data[1], yuvFrame->linesize[1], yuvFrame->data[2], yuvFrame->linesize[2]);
+                                    SDL_UpdateYUVTexture(VideoTexture, nullptr, yuvFrame->data[0], yuvFrame->linesize[0], yuvFrame->data[1], yuvFrame->linesize[1], yuvFrame->data[2], yuvFrame->linesize[2]);
 
-                                SDL_RenderClear(renderer);
-                                SDL_RenderCopy(renderer, VideoTexture, nullptr, nullptr);
-                                SDL_RenderPresent(renderer);
+                                    SDL_RenderClear(Video_Renderer);
+                                    SDL_RenderCopy(Video_Renderer, VideoTexture, nullptr, nullptr);
+                                    SDL_RenderPresent(Video_Renderer);
 
-                                SDL_Delay(16); // ~30fps
+                                    SDL_Delay(16); // ~30fps
+                                }
+                            }
+
+                            av_packet_unref(&packet);
+
+                            while (SDL_PollEvent(&event)) {
+                                if (event.type == SDL_QUIT)
+                                    run = false;
                             }
                         }
-
-                        av_packet_unref(&packet);
-
-                        while (SDL_PollEvent(&event)) {
-                            if (event.type == SDL_QUIT)
-                                run = false;
-                        }
                     }
-                    if (TrueAns == 5) {round++; TrueAns = 0;}
                 }
 
                 if (!AnswerTrue)
