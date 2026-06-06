@@ -13,17 +13,14 @@ int main() {
 
     const char* filename = "assets/videos/Video.mp4";
 
-    // 1️⃣ Mở file
     AVFormatContext* formatCtx = nullptr;
     if (avformat_open_input(&formatCtx, filename, nullptr, nullptr) != 0) {
         std::cout << "Không mở được video\n";
         return -1;
     }
 
-    // 2️⃣ Lấy thông tin stream
     avformat_find_stream_info(formatCtx, nullptr);
 
-    // 3️⃣ Tìm stream video
     int videoStream = -1;
     for (unsigned i = 0; i < formatCtx->nb_streams; i++) {
         if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -37,7 +34,6 @@ int main() {
         return -1;
     }
 
-    // 4️⃣ Lấy codec
     AVCodecParameters* codecpar = formatCtx->streams[videoStream]->codecpar;
     const AVCodec* codec = avcodec_find_decoder(codecpar->codec_id);
 
