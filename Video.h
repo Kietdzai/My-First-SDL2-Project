@@ -8,4 +8,4 @@ extern "C"{
 
 #include <SDL2/SDL.h>
 
-int FullLoadVideo(SDL_Renderer*& renderer, SDL_Texture*& texture, AVFormatContext*& formatCtx, AVCodecContext*& codecCtx, AVFrame*& frame, AVFrame*& yuvFrame, SwsContext*& swsCtx, int& videoStream, const char*& path, int* VideoW, int* VideoH);
+int LoadVideo(SDL_Renderer*& renderer, SDL_Texture*& texture, AVFormatContext*& formatCtx, AVCodecContext*& codecCtx, AVFrame*& frame, AVFrame*& yuvFrame, SwsContext*& swsCtx, int& videoStream, const char*& path, int* VideoW, int* VideoH);

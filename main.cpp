@@ -27,7 +27,6 @@ int main(int argc, const char** argv){
     
     const char* window_name = "Làng bánh khô mè Bà Liễu Mẹ Thành Phố Đà Nẵng";
 
-    SDL_Texture* VideoTexture = nullptr;
     AVFormatContext* formatCtx = nullptr;
     AVCodecContext* codecCtx = nullptr;
     AVFrame* frame = nullptr;
@@ -35,7 +34,7 @@ int main(int argc, const char** argv){
     SwsContext* swsCtx = nullptr;
     int videoStream = -1;
     const char* round1path = "assets/videos/Video.mp4";
-    int VideoW, VideoH;
+    int VideoW = 1920, VideoH = 1080;
 
     // Khởi tạo
     if (StartWindow(win, window_name, w, h) != 0) {
@@ -185,7 +184,6 @@ int main(int argc, const char** argv){
     
     Mix_Chunk* CorrectSoundEffect;
     Mix_Chunk* IncorrectSoundEffect;
-    Mix_Chunk* HitSoundEffect;
     if (LoadChunk(CorrectSoundEffect, CorrectSoundEffectPath) == 1){
         std::cout << "Đã có lỗi xảy ra trong lúc load nhạc (sound effect) của 'correct.wav'. Chi tiết: " << Mix_GetError() << std::endl;
         // Giải phóng bộ nhớ
@@ -194,9 +192,11 @@ int main(int argc, const char** argv){
         SDL_DestroyTexture(MenuBackground);
         SDL_DestroyTexture(GameBackground);
         SDL_DestroyTexture(CauA.UITexture);
-        SDL_DestroyTexture(CauB.UITexture);
-        SDL_DestroyTexture(CauC.UITexture);
-        SDL_DestroyTexture(CauD.UITexture);
+        
+        CauA.UITexture = nullptr;
+        CauB.UITexture = nullptr;
+        CauC.UITexture = nullptr;
+        CauD.UITexture = nullptr;
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(win);
         QuitFont();
@@ -213,9 +213,11 @@ int main(int argc, const char** argv){
         SDL_DestroyTexture(MenuBackground);
         SDL_DestroyTexture(GameBackground);
         SDL_DestroyTexture(CauA.UITexture);
-        SDL_DestroyTexture(CauB.UITexture);
-        SDL_DestroyTexture(CauC.UITexture);
-        SDL_DestroyTexture(CauD.UITexture);
+        
+        CauA.UITexture = nullptr;
+        CauB.UITexture = nullptr;
+        CauC.UITexture = nullptr;
+        CauD.UITexture = nullptr;
         Mix_FreeChunk(CorrectSoundEffect);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(win);
@@ -233,32 +235,11 @@ int main(int argc, const char** argv){
         SDL_DestroyTexture(MenuBackground);
         SDL_DestroyTexture(GameBackground);
         SDL_DestroyTexture(CauA.UITexture);
-        SDL_DestroyTexture(CauB.UITexture);
-        SDL_DestroyTexture(CauC.UITexture);
-        SDL_DestroyTexture(CauD.UITexture);
-        Mix_FreeChunk(CorrectSoundEffect);
-        Mix_FreeChunk(IncorrectSoundEffect);
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(win);
-        QuitFont();
-        QuitImage();
-        SoundCleanup();
-        SDL_Quit();
-        return 1;
-    }
-
-    if (FullLoadVideo(renderer, VideoTexture, formatCtx, codecCtx, frame, yuvFrame, swsCtx, videoStream, round1path, &VideoW, &VideoH) == -1){
-        std::cout << "Đã có lỗi trong lúc khởi tạo video." << std::endl;
-        // Giải phóng bộ nhớ
-        SDL_DestroyTexture(All_Menu_Button);
-        SDL_DestroyTexture(Submit_Button_Texture);
-        SDL_DestroyTexture(MenuBackground);
-        SDL_DestroyTexture(GameBackground);
-        SDL_DestroyTexture(CauA.UITexture);
-        SDL_DestroyTexture(CauB.UITexture);
-        SDL_DestroyTexture(CauC.UITexture);
-        SDL_DestroyTexture(CauD.UITexture);
-        SDL_DestroyTexture(health.texture);
+        
+        CauA.UITexture = nullptr;
+        CauB.UITexture = nullptr;
+        CauC.UITexture = nullptr;
+        CauD.UITexture = nullptr;
         Mix_FreeChunk(CorrectSoundEffect);
         Mix_FreeChunk(IncorrectSoundEffect);
         SDL_DestroyRenderer(renderer);
@@ -812,16 +793,20 @@ int main(int argc, const char** argv){
                         round++; TrueAns = 0;
                         SDL_Window* Video_Window;
                         SDL_Renderer* Video_Renderer;
+                        SDL_Texture* Video_Texture = nullptr;
                         const char* name_of_window_ = "Mời bạn xem đoạn video này";
+                        SDL_Event Video_Event;
                         if (StartWindow(Video_Window, name_of_window_, VideoW / 2, VideoH / 2) == 1){
                             SDL_DestroyTexture(All_Menu_Button);
                             SDL_DestroyTexture(Submit_Button_Texture);
                             SDL_DestroyTexture(MenuBackground);
                             SDL_DestroyTexture(GameBackground);
                             SDL_DestroyTexture(CauA.UITexture);
-                            SDL_DestroyTexture(CauB.UITexture);
-                            SDL_DestroyTexture(CauC.UITexture);
-                            SDL_DestroyTexture(CauD.UITexture);
+                            
+                            CauA.UITexture = nullptr;
+                            CauB.UITexture = nullptr;
+                            CauC.UITexture = nullptr;
+                            CauD.UITexture = nullptr;
                             SDL_DestroyTexture(health.texture);
                             Mix_FreeChunk(CorrectSoundEffect);
                             Mix_FreeChunk(IncorrectSoundEffect);
@@ -831,6 +816,7 @@ int main(int argc, const char** argv){
                             QuitImage();
                             SoundCleanup();
                             SDL_Quit();
+                            return 1;
                         }
                         if (Renderer(Video_Window, Video_Renderer) == 1){
                             SDL_DestroyWindow(Video_Window);
@@ -839,9 +825,11 @@ int main(int argc, const char** argv){
                             SDL_DestroyTexture(MenuBackground);
                             SDL_DestroyTexture(GameBackground);
                             SDL_DestroyTexture(CauA.UITexture);
-                            SDL_DestroyTexture(CauB.UITexture);
-                            SDL_DestroyTexture(CauC.UITexture);
-                            SDL_DestroyTexture(CauD.UITexture);
+                            
+                            CauA.UITexture = nullptr;
+                            CauB.UITexture = nullptr;
+                            CauC.UITexture = nullptr;
+                            CauD.UITexture = nullptr;
                             SDL_DestroyTexture(health.texture);
                             Mix_FreeChunk(CorrectSoundEffect);
                             Mix_FreeChunk(IncorrectSoundEffect);
@@ -851,18 +839,48 @@ int main(int argc, const char** argv){
                             QuitImage();
                             SoundCleanup();
                             SDL_Quit();
+                            return 1;
+                        }
+                        if (LoadVideo(Video_Renderer, Video_Texture, formatCtx, codecCtx, frame, yuvFrame, swsCtx, videoStream, round1path, &VideoW, &VideoH) == -1){
+                            std::cout << "Đã có lỗi trong lúc khởi tạo video." << std::endl;
+                            // Giải phóng bộ nhớ
+                            SDL_DestroyRenderer(Video_Renderer);
+                            SDL_DestroyWindow(Video_Window);
+                            SDL_DestroyTexture(All_Menu_Button);
+                            SDL_DestroyTexture(Submit_Button_Texture);
+                            SDL_DestroyTexture(MenuBackground);
+                            SDL_DestroyTexture(GameBackground);
+                            SDL_DestroyTexture(CauA.UITexture);
+                            
+                            CauA.UITexture = nullptr;
+                            CauB.UITexture = nullptr;
+                            CauC.UITexture = nullptr;
+                            CauD.UITexture = nullptr;
+                            SDL_DestroyTexture(health.texture);
+                            Mix_FreeChunk(CorrectSoundEffect);
+                            Mix_FreeChunk(IncorrectSoundEffect);
+                            SDL_DestroyRenderer(renderer);
+                            SDL_DestroyWindow(win);
+                            QuitFont();
+                            QuitImage();
+                            SoundCleanup();
+                            SDL_Quit();
+                            return 1;
                         }
                         while (av_read_frame(formatCtx, &packet) >= 0){
                             if (packet.stream_index == videoStream) {
                                 avcodec_send_packet(codecCtx, &packet);
                                 while (avcodec_receive_frame(codecCtx, frame) == 0) {
-
+                                    while (SDL_PollEvent(&Video_Event)) {
+                                        if (Video_Event.type == SDL_QUIT)
+                                            break;
+                                    }
                                     sws_scale(swsCtx, frame->data, frame->linesize, 0, VideoH, yuvFrame->data, yuvFrame->linesize);
 
-                                    SDL_UpdateYUVTexture(VideoTexture, nullptr, yuvFrame->data[0], yuvFrame->linesize[0], yuvFrame->data[1], yuvFrame->linesize[1], yuvFrame->data[2], yuvFrame->linesize[2]);
+                                    SDL_UpdateYUVTexture(Video_Texture, nullptr, yuvFrame->data[0], yuvFrame->linesize[0], yuvFrame->data[1], yuvFrame->linesize[1], yuvFrame->data[2], yuvFrame->linesize[2]);
 
                                     SDL_RenderClear(Video_Renderer);
-                                    SDL_RenderCopy(Video_Renderer, VideoTexture, nullptr, nullptr);
+                                    SDL_RenderCopy(Video_Renderer, Video_Texture, nullptr, nullptr);
                                     SDL_RenderPresent(Video_Renderer);
 
                                     SDL_Delay(16); // ~30fps
@@ -870,12 +888,10 @@ int main(int argc, const char** argv){
                             }
 
                             av_packet_unref(&packet);
-
-                            while (SDL_PollEvent(&event)) {
-                                if (event.type == SDL_QUIT)
-                                    run = false;
-                            }
                         }
+                        SDL_DestroyTexture(Video_Texture);
+                        SDL_DestroyRenderer(Video_Renderer);
+                        SDL_DestroyWindow(Video_Window);
                     }
                 }
 
@@ -896,9 +912,11 @@ int main(int argc, const char** argv){
     SDL_DestroyTexture(MenuBackground);
     SDL_DestroyTexture(GameBackground);
     SDL_DestroyTexture(CauA.UITexture);
-    SDL_DestroyTexture(CauB.UITexture);
-    SDL_DestroyTexture(CauC.UITexture);
-    SDL_DestroyTexture(CauD.UITexture);
+    
+    CauA.UITexture = nullptr;
+    CauB.UITexture = nullptr;
+    CauC.UITexture = nullptr;
+    CauD.UITexture = nullptr;
     SDL_DestroyTexture(CauA.texture);
     SDL_DestroyTexture(CauB.texture);
     SDL_DestroyTexture(CauC.texture);
@@ -906,7 +924,6 @@ int main(int argc, const char** argv){
     SDL_DestroyTexture(health.texture);
     Mix_FreeChunk(CorrectSoundEffect);
     Mix_FreeChunk(IncorrectSoundEffect);
-    Mix_FreeChunk(HitSoundEffect);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(win);
     TTF_CloseFont(font);

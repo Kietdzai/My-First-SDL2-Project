@@ -1,7 +1,7 @@
 #include "Video.h"
 // hàm này chạy tất cả những gì cần làm trước khi render video
 
-int FullLoadVideo(SDL_Renderer*& renderer, SDL_Texture*& texture, AVFormatContext*& formatCtx, AVCodecContext*& codecCtx, AVFrame*& frame, AVFrame*& yuvFrame, SwsContext*& swsCtx, int& videoStream, const char*& path, int* VideoW, int* VideoH){
+int LoadVideo(SDL_Renderer*& renderer, SDL_Texture*& texture, AVFormatContext*& formatCtx, AVCodecContext*& codecCtx, AVFrame*& frame, AVFrame*& yuvFrame, SwsContext*& swsCtx, int& videoStream, const char*& path, int* VideoW, int* VideoH){
     videoStream = -1;
     int return_code;
 
