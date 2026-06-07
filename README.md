@@ -19,8 +19,6 @@ Nguồn tài nguyên:
                    công cụ chuyển đổi: https://mp3cut.net/vi/
     correct.wav: từ https://www.myinstants.com/en/instant/ding-sound-effect/ (dưới dạng mp3)
                    công cụ chuyển đổi: https://mp3cut.net/vi/
-    hit.wav: từ https://www.myinstants.com/en/instant/minecraft-damage-6455/
-                   công cụ chuyển đổi: https://mp3cut.net/vi/
 
 Nguồn soạn câu hỏi (theo thứ tự trong tệp tin questions.json ở đường dẫn assets/questions):
     Lưu ý: Tất cả các giá trị (trừ giá trị của "Answer") đều đã được chuyển đổi sang mã Unicode (dạng Escape).
