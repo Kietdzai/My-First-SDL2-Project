@@ -636,6 +636,7 @@ int main(int argc, const char** argv){
             
             // Nếu texture của câu hỏi thay đổi tức là câu hỏi được thay đổi, phải tạo lại texture cho các câu trả lời
             if (UpdateQuestionTexture(renderer, question, font, w, h) == 1) {
+                std::cout << "Đã tạo texture cho câu hỏi." << std::endl;
                 // Lấy câu trả lời cho câu hỏi mới
                 AnsDataVariant = questions[question.question];
                 AnsDataMap = ConvertVariantToMap(AnsDataVariant);
@@ -652,6 +653,7 @@ int main(int argc, const char** argv){
                 UpdateAnswerTexture(renderer, CauB, font, h);
                 UpdateAnswerTexture(renderer, CauC, font, h);
                 UpdateAnswerTexture(renderer, CauD, font, h);
+                std::cout << "Đã tạo texture cho các câu trả lời." << std::endl;
 
                 // Đồng thời cập nhật lại vị trí y của nút
                 CauA.UI.ButtonRenderArea.y = question.RenderArea.y + CauA.UI.ButtonRenderArea.h / 2 + 50;
@@ -672,7 +674,7 @@ int main(int argc, const char** argv){
             SDL_RenderCopy(renderer, question.texture, nullptr, &question.RenderArea);
 
             // Render nút
-            // RenderCopy trước câu hỏi để cái nút ở phía dưới cái chữ
+            // RenderCopy trước texture của câu hỏi để cái nút ở phía dưới cái chữ
             SDL_RenderCopy(renderer, CauA.UITexture, &CauA.UI.Button[CauA.UI.ButtonState], &CauA.UI.ButtonRenderArea);
             SDL_RenderCopy(renderer, CauB.UITexture, &CauB.UI.Button[CauB.UI.ButtonState], &CauB.UI.ButtonRenderArea);
             SDL_RenderCopy(renderer, CauC.UITexture, &CauC.UI.Button[CauC.UI.ButtonState], &CauC.UI.ButtonRenderArea);
@@ -722,7 +724,6 @@ int main(int argc, const char** argv){
 
                 SDL_RenderPresent(renderer);
                 Submit.Pressed = false;
-                
                 if (CauA.Choosing) {
                     std::cout << "Câu trả lời: Câu A. ";
                     if (IsAnswerTrue(questions, question.question, "A")){
@@ -785,17 +786,48 @@ int main(int argc, const char** argv){
                 if (AnswerTrue) {
                     TrueAns++;
                     TrueCounter.so++;
+                    TrueCounter.NeedToChange = true;
+                    Update_CreateTexture(renderer, TrueCounter, font);
+
                     Mix_PlayChannel(-1, CorrectSoundEffect, 0);
                     std::cout << "Đang phát 'correct.wav'." << std::endl;
+                    Submit.ButtonState = 0;
+                    // Render một số thành phần
+                    SDL_RenderClear(renderer);
+                    // Render hình nền
+                    SDL_RenderCopy(renderer, GameBackground, nullptr, &GameBackgroundRenderArea);
+                    // Render bộ đếm
+                    SDL_RenderCopy(renderer, AnsCounter.texture, nullptr, &AnsCounter.TextRenderArea);
+                    SDL_RenderCopy(renderer, TrueCounter.texture, nullptr, &TrueCounter.TextRenderArea);
+                    // Render câu hỏi
+                    SDL_RenderCopy(renderer, question.texture, nullptr, &question.RenderArea);
+                    // Render nút
+                    SDL_RenderCopy(renderer, CauA.UITexture, &CauA.UI.Button[CauA.UI.ButtonState], &CauA.UI.ButtonRenderArea);
+                    SDL_RenderCopy(renderer, CauB.UITexture, &CauB.UI.Button[CauB.UI.ButtonState], &CauB.UI.ButtonRenderArea);
+                    SDL_RenderCopy(renderer, CauC.UITexture, &CauC.UI.Button[CauC.UI.ButtonState], &CauC.UI.ButtonRenderArea);
+                    SDL_RenderCopy(renderer, CauD.UITexture, &CauD.UI.Button[CauD.UI.ButtonState], &CauD.UI.ButtonRenderArea);
 
+                    // Render chữ
+                    SDL_RenderCopy(renderer, CauA.texture, nullptr, &CauA.RenderArea);
+                    SDL_RenderCopy(renderer, CauB.texture, nullptr, &CauB.RenderArea);
+                    SDL_RenderCopy(renderer, CauC.texture, nullptr, &CauC.RenderArea);
+                    SDL_RenderCopy(renderer, CauD.texture, nullptr, &CauD.RenderArea);
+                    
+                    // Render nút Ok
+                    SDL_RenderCopy(renderer, Submit_Button_Texture, &Submit.Button[0], &Submit.ButtonRenderArea);
+
+                    // Render thanh máu
+                    SDL_RenderCopy(renderer, health.texture, &health.Button[health.HealthBarState], &health.RenderArea);
+                    SDL_RenderPresent(renderer);
                     if (TrueAns == 5) {
                         ChangeCursor(normal);
                         round++; TrueAns = 0;
                         SDL_Window* Video_Window;
                         SDL_Renderer* Video_Renderer;
                         SDL_Texture* Video_Texture = nullptr;
-                        const char* name_of_window_ = "Mời bạn xem đoạn video này";
+                        const char* name_of_window_ = "Chúc mừng, bạn đã hoàn thành một vòng! Xin mời bạn xem video";
                         SDL_Event Video_Event;
+                        bool quit = false;
                         if (StartWindow(Video_Window, name_of_window_, VideoW / 2, VideoH / 2) == 1){
                             SDL_DestroyTexture(All_Menu_Button);
                             SDL_DestroyTexture(Submit_Button_Texture);
@@ -867,13 +899,17 @@ int main(int argc, const char** argv){
                             SDL_Quit();
                             return 1;
                         }
-                        while (av_read_frame(formatCtx, &packet) >= 0){
+                        int Video_ID = SDL_GetWindowID(Video_Window);
+                        // Render
+                        while (av_read_frame(formatCtx, &packet) >= 0 && !quit){
                             if (packet.stream_index == videoStream) {
                                 avcodec_send_packet(codecCtx, &packet);
                                 while (avcodec_receive_frame(codecCtx, frame) == 0) {
                                     while (SDL_PollEvent(&Video_Event)) {
-                                        if (Video_Event.type == SDL_QUIT)
+                                        if (Video_Event.type == SDL_QUIT && Video_Event.window.windowID == Video_ID){
+                                            quit = true;
                                             break;
+                                        }
                                     }
                                     sws_scale(swsCtx, frame->data, frame->linesize, 0, VideoH, yuvFrame->data, yuvFrame->linesize);
 
@@ -884,19 +920,23 @@ int main(int argc, const char** argv){
                                     SDL_RenderPresent(Video_Renderer);
 
                                     SDL_Delay(16); // ~30fps
+                                    if (quit) break;
                                 }
                             }
-
+                            if (quit) break;
                             av_packet_unref(&packet);
                         }
                         SDL_DestroyTexture(Video_Texture);
                         SDL_DestroyRenderer(Video_Renderer);
                         SDL_DestroyWindow(Video_Window);
+                        questions.erase(question.question);
+                        // Random lại câu hỏi
+                        if (questions.size() != 0) {
+                            question.question = RandomQuestion(questions);
+                            question.NeedToChange = true;
+                        } else end = true;
                     }
-                }
-
-                if (!AnswerTrue)
-                {
+                } if (!AnswerTrue){
                     Mix_PlayChannel(-1, IncorrectSoundEffect, 0);
                     std::cout << "Đang phát 'incorrect.wav'." << std::endl;
                     health.HealthBarState--;
