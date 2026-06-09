@@ -5,12 +5,7 @@ int LoadVideo(SDL_Renderer*& renderer, SDL_Texture*& texture, AVFormatContext*& 
     videoStream = -1;
     int return_code;
 
-    return_code = avformat_open_input(
-        &formatCtx,
-        path,
-        nullptr,
-        nullptr
-    );
+    return_code = avformat_open_input(&formatCtx, path, nullptr, nullptr);
 
     if(return_code < 0)
     {
