@@ -17,6 +17,7 @@
 
 int main(int argc, const char** argv){
     SetUnicodeForTheOutput();
+    std::cout << "Chào mừng đến với trò chơi trả lời câu hỏi, chủ đề về: Làng nghề truyền thống ở địa phương em" << std::endl;
     bool run = true;
     bool end = false;
     SDL_Window* win;
@@ -35,7 +36,7 @@ int main(int argc, const char** argv){
     int videoStream = -1;
     const char* round1path = "assets/videos/Video.mp4";
     int VideoW = 1920, VideoH = 1080;
-
+    std::cout << "Đang khởi tạo..." << std::endl;
     // Khởi tạo
     if (StartWindow(win, window_name, w, h) != 0) {
         std::cout << "Đã có lỗi xảy ra trong lúc tạo cửa sổ SDL. Chi tiết: " << SDL_GetError() << std::endl;
@@ -83,6 +84,7 @@ int main(int argc, const char** argv){
         SDL_Quit();
         return 1;
     }
+    std::cout << "Đã khởi tạo thành công!" << std::endl;
 
     SDL_Texture* All_Menu_Button = nullptr;
     SDL_Texture* Submit_Button_Texture = nullptr;
@@ -112,7 +114,7 @@ int main(int argc, const char** argv){
     const char* CorrectSoundEffectPath = "assets/sounds/correct.wav";
     const char* IncorrectSoundEffectPath = "assets/sounds/incorrect.wav";
     const char* HealthBarPath = "assets/textures/healthbar.png";
-
+    std::cout << "Đang load các texture và sound effect..." << std::endl;
     if (LoadTexture(All_Menu_Button, renderer, MenuButtonPath) == 1){
         std::cout << "Đã có lỗi trong lúc tạo Texture cho các nút ở Menu. Chi tiết: " << IMG_GetError() << std::endl;
         // Giải phóng bộ nhớ
@@ -250,6 +252,7 @@ int main(int argc, const char** argv){
         SDL_Quit();
         return 1;
     }
+    std::cout << "Đã load thành công!" << std::endl;
 
     int TrueAns = 0; // NẾU trả lời đúng 5 lần thì được tăng round ở dưới
     int round = 0; // NẾU round tăng thì đoạn video xem được cũng tăng
@@ -358,8 +361,10 @@ int main(int argc, const char** argv){
     FirstLoad(question); // Lúc này câu hỏi đã được Random
 
     // Set từng câu trả lời vào các biến
+    std::cout << "Chuẩn bị load các câu hỏi..." << std::endl;
     ___VALUETYPE___ AnsDataVariant = questions[question.question];
     ___MAPTYPE___ AnsDataMap = ConvertVariantToMap(AnsDataVariant);
+    std::cout << "Load thành công!" << std::endl;
 
     // Gán vào mỗi câu hỏi
     for (auto& pair : AnsDataMap){
@@ -763,7 +768,6 @@ int main(int argc, const char** argv){
                 } else if (!CauA.Choosing && !CauB.Choosing && !CauC.Choosing && !CauD.Choosing){
                     std::cout << "Không chọn câu trả lời" << std::endl;
                     Mix_PlayChannel(-1, IncorrectSoundEffect, 0);
-                    std::cout << "Đang phát sound effect 'incorrect'." << std::endl;
                     AnswerTrue = false;
                 }
                 // Xóa câu hỏi đã trả lời
@@ -771,6 +775,7 @@ int main(int argc, const char** argv){
                 // Random lại câu hỏi
                 if (questions.size() != 0) {
                     question.question = RandomQuestion(questions);
+                    std::cout << "Câu hỏi được random là: " << question.question << std::endl;
                     question.NeedToChange = true;
                 } else end = true;
                 CauA.Choosing = false;
@@ -826,7 +831,7 @@ int main(int argc, const char** argv){
                         SDL_Renderer* Video_Renderer;
                         SDL_Texture* Video_Texture = nullptr;
                         const char* name_of_window_ = "Chúc mừng, bạn đã hoàn thành một vòng! Xin mời bạn xem video";
-                        SDL_Event Video_Event;
+                        // SDL_Event Video_Event;
                         bool quit = false;
                         if (StartWindow(Video_Window, name_of_window_, VideoW / 2, VideoH / 2) == 1){
                             SDL_DestroyTexture(All_Menu_Button);
@@ -905,8 +910,8 @@ int main(int argc, const char** argv){
                             if (packet.stream_index == videoStream) {
                                 avcodec_send_packet(codecCtx, &packet);
                                 while (avcodec_receive_frame(codecCtx, frame) == 0) {
-                                    while (SDL_PollEvent(&Video_Event)) {
-                                        if (Video_Event.type == SDL_QUIT && Video_Event.window.windowID == Video_ID){
+                                    while (SDL_PollEvent(&event)) {
+                                        if (event.type == SDL_QUIT && event.window.windowID == Video_ID){
                                             quit = true;
                                             break;
                                         }
@@ -933,6 +938,7 @@ int main(int argc, const char** argv){
                         // Random lại câu hỏi
                         if (questions.size() != 0) {
                             question.question = RandomQuestion(questions);
+                            std::cout << "Câu hỏi được random là: " << question.question << std::endl;
                             question.NeedToChange = true;
                         } else end = true;
                     }

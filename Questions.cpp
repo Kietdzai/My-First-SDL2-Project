@@ -39,7 +39,6 @@ std::string RandomQuestion(const ___MAPTYPE___& questions){
     std::advance(iterator, random_index); // di chuyển con trỏ iterator lên random_index bước - tức là di chuyển lên cặp được random
 
     std::string ques = iterator-> first;
-    std::cout << "Câu hỏi được random là: " << ques << std::endl;
     return ques;
 }
 // Hàm này có tác dụng là tạo lại texture mới khi câu hỏi thay đổi
